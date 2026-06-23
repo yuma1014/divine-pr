@@ -1,0 +1,407 @@
+/* 宣告本地的 OTF 字體 */
+@font-face {
+    font-family: 'GodMessengerFont'; /* 自訂您的字體名稱 */
+    src: url('font.otf') format('opentype'); /* 請將 'my-font.otf' 替換為您實際的字體檔名 */
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* 全域基本設定 */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #050508;
+    color: white;
+    /* 套用剛剛定義的自訂字體名稱，後面加上系統備用字體 */
+    font-family: 'GodMessengerFont', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* 畫布設定，必須在最底層且不干擾點擊 */
+#bg-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none; 
+}
+
+/* 頁面切換核心邏輯 */
+.page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    opacity: 0; /* 預設隱藏 */
+    visibility: hidden;
+    pointer-events: none; /* 隱藏時禁止點擊 */
+    transition: opacity 0.8s ease, visibility 0.8s;
+}
+.page.active {
+    opacity: 1; /* 啟用時顯示 */
+    visibility: visible;
+    pointer-events: auto; /* 啟用時允許點擊 */
+    z-index: 20;
+}
+
+/* --- 首頁光點排版 (改為絕對定位基準) --- */
+#gods-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 1s ease, opacity 1s ease;
+}
+/* 3D 穿梭過場效果 */
+body.warping #gods-container {
+    transform: scale(3);
+    opacity: 0;
+}
+
+/* 神使按鈕改為絕對定位，移除 hover 放大的 transform 避免與 JS 衝突 */
+.god-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    will-change: transform; /* 優化 JS 動畫效能 */
+}
+.god-btn:hover {
+    z-index: 100;
+}
+
+.god-dot {
+    width: 30px; /* 稍微加大光點 */
+    height: 30px;
+    border-radius: 50%;
+    background-color: #fff;
+    /* 預設光暈，實際拖曳光影將由 JS 即時寫入 */
+    box-shadow: 0 0 20px 8px var(--god-color); 
+    transition: transform 0.3s ease;
+}
+.god-btn:hover .god-dot {
+    transform: scale(1.2);
+}
+.god-name {
+    margin-top: 15px;
+    font-size: 1.2rem;
+    letter-spacing: 4px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8); /* 確保在光暈下文字依然清晰 */
+}
+
+/* --- 新增：Logo 區塊設定 --- */
+/* 打火機大小比例，解析度 1536x1024 下設定為寬 60px、高 100px */
+#logo-container {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;  
+    height: 300px;
+    z-index: 30;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* 若需要預覽邊界可解開下方註解 */
+    /* border: 1px dashed rgba(255,255,255,0.3); */
+}
+#main-logo {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* --- 前導展演排版 --- */
+#intro-bg {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-color: #000000; /* 將底色固定為純黑 */
+    transition: opacity 0.4s ease; /* 透明度漸變效果 */
+}
+.glass-text {
+    position: absolute;
+    bottom: 15%;
+    width: 100%;
+    text-align: center;
+    font-size: 2rem;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+.glass-text.show {
+    opacity: 1;
+}
+
+/* --- 角色介紹內頁排版 --- */
+#profile-content {
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.glass-btn {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    backdrop-filter: blur(10px); /* 蘋果毛玻璃效果 */
+    cursor: pointer;
+    z-index: 30;
+}
+
+/* --- 互動彈窗設定 --- */
+#entry-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(5, 5, 8, 0.95); /* 深色半透明遮罩 */
+    z-index: 9999; /* 確保在最上層 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.8s ease, visibility 0.8s;
+}
+/* 當移除 active 類別時，觸發漸隱消失 */
+#entry-overlay:not(.active) {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+.entry-box {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 40px 60px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+}
+.entry-box p {
+    font-size: 2rem;
+    margin: 0 0 10px 0;
+    letter-spacing: 4px;
+}
+.entry-box span {
+    font-size: 1.2rem;
+    color: #ccc;
+    display: block;
+    margin-bottom: 30px;
+}
+#btn-enter {
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+/* ==========================================
+   響應式設計與自適應調整
+   ========================================== */
+
+/* 直向螢幕提示遮罩設定 */
+#portrait-warning {
+    display: none; /* 預設隱藏 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #050508;
+    z-index: 10000; /* 確保在所有元素最上層 */
+    color: white;
+    text-align: center;
+}
+
+/* 偵測設備方向為直向 (Portrait) 時顯示遮罩 */
+@media screen and (orientation: portrait) {
+    #portrait-warning {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    /* 隱藏底下的互動元素，避免誤觸 */
+    #entry-overlay, #page-home, #page-intro, #page-profile {
+        display: none !important;
+    }
+}
+
+.warning-box {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    width: 80%;
+    max-width: 300px;
+}
+
+.rotate-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    animation: rotate-anim 2s infinite ease-in-out;
+}
+
+@keyframes rotate-anim {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-90deg); }
+}
+
+/* 覆蓋原有的固定尺寸，改為動態縮放 (使用 clamp 函數) */
+.god-dot {
+    /* 最小值 20px，首選值 3vw，最大值 30px */
+    width: clamp(20px, 3vw, 30px);
+    height: clamp(20px, 3vw, 30px);
+}
+
+.god-name {
+    margin-top: 10px;
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
+}
+
+#logo-container {
+    /* 讓 Logo 隨螢幕大小縮放 */
+    width: clamp(100px, 15vw, 180px);
+    height: auto;
+    bottom: 2vh; /* 依照畫面高度比例定位 */
+}
+
+#main-logo {
+    width: 100%;
+    height: auto;
+}
+
+.glass-text {
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    bottom: 10%;
+    padding: 0 20px; /* 避免文字在小螢幕貼齊邊緣 */
+    box-sizing: border-box;
+}
+
+.entry-box {
+    width: 80%;
+    max-width: 400px;
+    padding: clamp(20px, 5vw, 40px) clamp(30px, 6vw, 60px);
+}
+
+.entry-box p {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+.glass-btn {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    padding: 8px 16px;
+    top: 20px;
+    left: 20px;
+}
+
+/* ==========================================
+   幻燈片展示頁面 (前導展演) 暗角效果
+   ========================================== */
+
+/* 利用 ::before 偽元素在畫面上蓋一層漸層暗角 */
+#page-intro::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* 確保這層暗角不會阻擋到使用者的「點擊螢幕切換」與「左上角返回按鈕」 */
+    pointer-events: none; 
+    
+    /* 核心效果：徑向漸層。中央透明 (50%內)，邊緣漸變成 90% 不透明的黑色 */
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.9) 100%);
+    
+    /* 設定層級，蓋在背景圖之上，但要在字幕之下 */
+    z-index: 5; 
+}
+
+/* 確保字幕的層級高於暗角，文字才不會被黑影蓋暗 */
+#intro-subtitle {
+    z-index: 10;
+}
+
+/* ==========================================
+   首頁頂部星空引言
+   ========================================== */
+#home-quote {
+    position: absolute;
+    top: 6vh; /* 原本是 8vh，改為 4vh 讓字體更靠近頂部 */
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    /* ... 其餘樣式保持不變 ... */
+}
+    
+/* ==========================================
+   首頁頂部星空引言
+   ========================================== */
+#home-quote {
+    position: absolute;
+    top: 4vh; 
+    left: 50%;
+    transform: translateX(-50%); 
+    text-align: center;
+    
+    /* 文字色彩與微弱發光效果 */
+    color: rgba(255, 255, 255, 0.85); 
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4), 0 2px 4px rgba(0, 0, 0, 0.8);
+    
+    /* 排版與自適應大小設定 */
+    font-size: clamp(1rem, 2.5vw, 1.3rem); 
+    letter-spacing: 4px; 
+    line-height: 2; 
+    width: 90%; 
+    
+    z-index: 30; 
+    pointer-events: none; 
+}
+
+/* ==========================================
+   Logo 區塊超連結與提示文字設定
+   ========================================== */
+   
+/* 讓 a 標籤呈現垂直排列，並去除預設的底線顏色 */
+.logo-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none; 
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+/* 滑鼠移上去時有微幅放大與發光效果，增加點擊回饋感 */
+.logo-link:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+}
+
+/* 提示文字的排版與自適應大小 */
+.logo-text {
+    margin-top: 8px; /* 與上方 Logo 保持一點距離 */
+    color: rgba(255, 255, 255, 0.6); /* 稍微偏灰半透明，不搶 Logo 風采 */
+    font-size: clamp(0.7rem, 1.2vw, 0.9rem); 
+    letter-spacing: 2px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); /* 加上陰影確保在光點飄過時依然可見 */
+}

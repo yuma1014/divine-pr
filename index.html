@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神使角色設計成果展</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <body>
+        <div id="portrait-warning">
+        <div class="warning-box">
+            <div class="rotate-icon">🔄</div>
+            <p>請旋轉您的設備</p>
+            <span>本展演為橫向設計，請將設備轉為橫向以獲得最佳體驗。</span>
+        </div>
+    </div>
+    <div id="entry-overlay" class="active">
+        <div class="entry-box">
+            <p>請開聲音</p>
+            <span>(佩戴耳機使用體驗更佳)</span>
+            <button id="btn-enter" class="glass-btn">進入星空</button>
+        </div>
+    </div>
+    <canvas id="bg-canvas"></canvas>
+
+<div id="page-home" class="page active">
+        <div id="home-quote">
+            世上的每一個人就像黑夜中的點點星光。<br>
+            而懷抱堅定信念的他們，則綻放更耀眼的光亮。
+        </div>
+
+        <div id="gods-container"></div>
+        
+        <div id="logo-container">
+            <a href="https://fantasydreamck.github.io/divine-pr/" target="_blank" class="logo-link">
+                <img src="logo.png" alt="Logo" id="main-logo">
+                <span class="logo-text">(點擊進入官網)</span>
+            </a>
+        </div>
+    </div>
+
+    <div id="page-intro" class="page">
+        <div id="intro-bg"></div>
+        <div id="intro-subtitle" class="glass-text"></div>
+    </div>
+
+    <div id="page-profile" class="page">
+        <button id="btn-back" class="glass-btn">返回星空</button>
+        <div id="profile-content"></div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
