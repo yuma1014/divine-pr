@@ -74,9 +74,29 @@ let timerIdle = null;        // 閒置防呆計時器
 // ==========================================
 // 3. 核心流轉邏輯
 // ==========================================
-
+// 新增：預加載所有圖片
+function preloadAssets() {
+    GODS.forEach(god => {
+        // 預加載介紹頁圖片
+        if (god.imgIntro && Array.isArray(god.imgIntro)) {
+            god.imgIntro.forEach(url => {
+                const img = new Image();
+                img.src = url;
+            });
+        }
+        // 如果未來有 imgProfile，也可以一起預加載
+        if (god.imgProfile) {
+            const img = new Image();
+            img.src = god.imgProfile;
+        }
+    });
+    console.log("所有資源已開始預加載...");
+}
 // 初始化執行
 function init() {
+    // 【新增這行】一進網頁立即執行預加載
+    preloadAssets(); 
+    
     renderHomeGods();
     initCanvasParticles();
     
