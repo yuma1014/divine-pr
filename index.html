@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="icon-192.png">  
     <title>神使角色設計成果展</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -51,5 +55,14 @@
     </div>
 
     <script src="main.js"></script>
+    <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('Service Worker 註冊成功'))
+        .catch(err => console.log('註冊失敗', err));
+    });
+  }
+</script>
 </body>
 </html>
