@@ -342,19 +342,7 @@ body.warping #gods-container {
 }
 
 /* ==========================================
-   首頁頂部星空引言
-   ========================================== */
-#home-quote {
-    position: absolute;
-    top: 6vh; /* 原本是 8vh，改為 4vh 讓字體更靠近頂部 */
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    /* ... 其餘樣式保持不變 ... */
-}
-    
-/* ==========================================
-   首頁頂部星空引言
+   首頁頂部星空引言 (清理重複與優化)
    ========================================== */
 #home-quote {
     position: absolute;
@@ -373,6 +361,7 @@ body.warping #gods-container {
     line-height: 2; 
     width: 90%; 
     
+    /* 確保置頂且不干擾點擊 */
     z-index: 30; 
     pointer-events: none; 
 }
