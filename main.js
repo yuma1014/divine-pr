@@ -21,7 +21,11 @@ const GODS = [
         audioIntro: ['倪燄1.wav', '倪燄2.wav', '倪燄3.wav'], 
         audioBgm: '倪燄BGM.mp3', 
         imgIntro: ['https://res.cloudinary.com/dsfkpn8ww/image/upload/v1782257376/%E5%80%AA%E7%87%841_kqaz3b.png', 'https://res.cloudinary.com/dsfkpn8ww/image/upload/v1782257381/%E5%80%AA%E7%87%842_kxipnc.png', 'https://res.cloudinary.com/dsfkpn8ww/image/upload/v1782257387/%E5%80%AA%E7%87%843_unmpbd.png'],
-        scripts: ['配音君趕工中。', '配音君趕工中。', '配音君趕工中。']
+        scripts: [
+            '我是倪燄，一個差點被截稿期逼瘋的漫畫家。雖然喝了忘情水失憶，但幸好，我還有這支畫筆，以及媽祖娘娘給我的信念。',
+            '既然成了神使，那我就把凡人的掙扎與神蹟，通通畫進我的故事裡吧！',
+            '信念是看不見的，但當你真心相信它時，奇蹟就已經在我的畫紙上成形了。'
+        ]
     },
     { 
         id: 'lin', name: '林願初', color: '#98FB98', // 淡綠色 (PaleGreen)
@@ -42,7 +46,11 @@ const GODS = [
         audioIntro: ['周宛辭1.wav', '周宛辭2.wav', '周宛辭3.wav'], 
         audioBgm: '周宛辭BGM.mp3', 
         imgIntro: ['https://res.cloudinary.com/dsfkpn8ww/image/upload/v1782257705/%E5%91%A8%E5%AE%9B%E8%BE%AD1_p0vqcd.png', 'https://res.cloudinary.com/dsfkpn8ww/image/upload/v1782257707/%E5%91%A8%E5%AE%9B%E8%BE%AD2_j0clzi.png', 'https://res.cloudinary.com/dsfkpn8ww/image/upload/v1782257710/%E5%91%A8%E5%AE%9B%E8%BE%AD3_bnwt8g.png'],
-        scripts: ['配音君趕工中。', '配音君趕工中。', '配音君趕工中。']
+        scripts: [
+            '哎呀，不好意思，手裡還拿著孩子的玩具呢。你好，我是周宛辭。照顧特殊孩子很不容易，但如果你有什麼煩惱，隨時可以跟我聊。',
+            '老大剛剛把積木收好，老二又吵著要抱抱。當媽媽的生活就是這樣雞飛狗跳。',
+            '在精神快要斷線的那天，大腦裡突然響起了溫柔的聲音。那不是幻聽，是神明牽起了我的手，教我怎麼一步步走出黑暗。'
+        ]
     }
 ];
 
